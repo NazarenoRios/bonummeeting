@@ -26,8 +26,8 @@ function Meeting() {
   }, []);
 
   // method to send msg to react native
-  const sendMessage = (message) => {
-    window.ReactNativeWebView.postMessage(message);
+  const sendMessage = () => {
+    window.ReactNativeWebView.postMessage("yahallo! web");
   };
 
   useEffect(() => {
@@ -64,20 +64,15 @@ function Meeting() {
 
       api.current = new window.JitsiMeetExternalAPI(domain, options);
 
-      api.addEventListener('videoConferenceJoined', () => {
-        sendMessage(JSON.stringify({message: "START_CALL"}));
-      });
-
       api.current.addEventListener("participantJoined", (event) => {
-        sendMessage(JSON.stringify({message: "PARTICIPANT_JOINED", data: event}));
+        sendMessage();
 
         // if (isCoachee) {
         //   api.current.executeCommand("grantModerator", event.id);
         // }
       });
 
-      api.current.addEventListener("toolbarButtonClicked", (event) => {
-        sendMessage(JSON.stringify({message: "BUTTON_CLICKED", data: event}));
+      api.current.addEventListener("toolbarButtonClicked", (e) => {
         // if (isCoachee) {
         //   return;
         // }
