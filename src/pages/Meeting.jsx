@@ -67,6 +67,7 @@ function Meeting() {
 
       api.current.addEventListener("toolbarButtonClicked", (e) => {
         if (isCoachee) {
+          sendMessage("COACHEE_CANT_HANGUP");
           return;
         }
 
