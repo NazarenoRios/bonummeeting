@@ -4,7 +4,10 @@ import Meeting from "./pages/Meeting";
 function App() {
   return (
     <Routes>
-      <Route path="/meeting/:meetingId" element={<Meeting />} />
+      <Route
+        path="/meeting/:meetingId/:userRole/:userName/:userLastname/:userLanguage"
+        element={<Meeting />}
+      />
     </Routes>
   );
 }

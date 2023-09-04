@@ -2,32 +2,23 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 function Meeting() {
-  const { meetingId } = useParams();
+  const { meetingId, userRole, userName, userLastname, userLanguage } =
+    useParams();
 
   const domain = "bonum-meet.bonumcoaching.com"; // Cambia esto al dominio correcto
   const parentNode = useRef(null);
   const api = useRef(null);
   const navigate = useNavigate();
 
-  const isCoachee = false;
+  const isCoachee = userRole === "coachee";
+
   const user = { name: "namee", lastname: "lastname", languages: ["es", "en"] };
 
   const [meetingStarted, setMeetingStarted] = useState(false); // Estado para controlar si la reunión ha comenzado
 
-  // listener to receive msgs from react native
-  useEffect(() => {
-    const messageListener = window.addEventListener(
-      "message",
-      (nativeEvent) => {
-        console.log(nativeEvent?.data);
-      }
-    );
-    return messageListener;
-  }, []);
-
   // method to send msg to react native
-  const sendMessage = () => {
-    window.ReactNativeWebView.postMessage("yahallo! web");
+  const sendMessage = (message) => {
+    window.ReactNativeWebView.postMessage(message);
   };
 
   useEffect(() => {
@@ -49,9 +40,9 @@ function Meeting() {
         width: "100%",
         height: "100%",
         parentNode: parentNode.current,
-        lang: user?.languages[0],
+        lang: userLanguage,
         userInfo: {
-          displayName: `${user?.name} ${user?.lastname}`,
+          displayName: `${userName} ${userLastname}`,
         },
         configOverwrite: {
           prejoinPageEnabled: false,
@@ -64,32 +55,35 @@ function Meeting() {
 
       api.current = new window.JitsiMeetExternalAPI(domain, options);
 
-      api.current.addEventListener("participantJoined", (event) => {
-        sendMessage();
+      api.addEventListener("videoConferenceJoined", () => {
+        sendMessage("START_CALL");
+      });
 
-        // if (isCoachee) {
-        //   api.current.executeCommand("grantModerator", event.id);
-        // }
+      api.current.addEventListener("participantJoined", (event) => {
+        if (isCoachee) {
+          api.current.executeCommand("grantModerator", event.id);
+        }
       });
 
       api.current.addEventListener("toolbarButtonClicked", (e) => {
-        // if (isCoachee) {
-        //   return;
-        // }
-        // api.current.executeCommand("endConference");
-        // const buttonPressed = e.key;
-        // if (buttonPressed === "hangup-menu" || buttonPressed === "hangup") {
-        //   api.current.executeCommand("hangup");
-        // }
-        // sendMessage();
+        if (isCoachee) {
+          return;
+        }
+
+        const buttonPressed = e.key;
+
+        if (buttonPressed === "hangup-menu" || buttonPressed === "hangup") {
+          api.current.executeCommand("hangup");
+          api.current.executeCommand("endConference");
+          sendMessage("END_CALL");
+        }
       });
 
       api.current.addEventListener("readyToClose", () => {
-        // navigate("/");
-        // sendMessage();
+        sendMessage("EVALUATE_SESSION");
       });
 
-      setMeetingStarted(true); // Marca la reunión como iniciada
+      setMeetingStarted(true);
     }
   }, [meetingId, meetingStarted, navigate, isCoachee, user, domain]);
 
