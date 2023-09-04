@@ -14,22 +14,6 @@ function Meeting() {
 
   const [meetingStarted, setMeetingStarted] = useState(false); // Estado para controlar si la reunión ha comenzado
 
-  // listener to receive msgs from react native
-  useEffect(() => {
-    const messageListener = window.addEventListener(
-      "message",
-      (nativeEvent) => {
-        console.log(nativeEvent?.data);
-      }
-    );
-    return messageListener;
-  }, []);
-
-  // method to send msg to react native
-  const sendMessage = () => {
-    window.ReactNativeWebView.postMessage("yahallo! web");
-  };
-
   useEffect(() => {
     if (!meetingStarted) {
       // Evita que se vuelva a iniciar la reunión si ya ha comenzado
@@ -65,34 +49,50 @@ function Meeting() {
       api.current = new window.JitsiMeetExternalAPI(domain, options);
 
       api.current.addEventListener("participantJoined", (event) => {
+        // if (isCoachee) {
+        //   api.current.executeCommand("grantModerator", event.id);
+        // }
         sendMessage();
-
-        if (isCoachee) {
-          api.current.executeCommand("grantModerator", event.id);
-        }
       });
 
       api.current.addEventListener("toolbarButtonClicked", (e) => {
-        if (isCoachee) {
-          return;
-        }
+        // if (isCoachee) {
+        //   return;
+        // }
 
-        api.current.executeCommand("endConference");
+        // api.current.executeCommand("endConference");
 
-        const buttonPressed = e.key;
+        // const buttonPressed = e.key;
 
-        if (buttonPressed === "hangup-menu" || buttonPressed === "hangup") {
-          api.current.executeCommand("hangup");
-        }
+        // if (buttonPressed === "hangup-menu" || buttonPressed === "hangup") {
+        //   api.current.executeCommand("hangup");
+        // }
+        sendMessage();
       });
 
       api.current.addEventListener("readyToClose", () => {
-        navigate("/");
+        // navigate("/");
+        sendMessage();
       });
 
       setMeetingStarted(true); // Marca la reunión como iniciada
     }
   }, [meetingId, meetingStarted, navigate, isCoachee, user, domain]);
+
+  useEffect(() => {
+    const messageListener = window.addEventListener(
+      "message",
+      (nativeEvent) => {
+        console.log(nativeEvent?.data);
+      }
+    );
+    return messageListener;
+  }, []);
+
+  // method to send msg to react native
+  const sendMessage = () => {
+    window.ReactNativeWebView.postMessage("Hi from PWA");
+  };
 
   return <div ref={parentNode}></div>;
 }
