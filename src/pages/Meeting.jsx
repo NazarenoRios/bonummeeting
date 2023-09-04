@@ -55,7 +55,7 @@ function Meeting() {
 
       api.current = new window.JitsiMeetExternalAPI(domain, options);
 
-      api.addEventListener("videoConferenceJoined", () => {
+      api.current.addEventListener("videoConferenceJoined", () => {
         sendMessage("START_CALL");
       });
 
