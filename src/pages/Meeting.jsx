@@ -74,7 +74,6 @@ function Meeting() {
         const buttonPressed = e.key;
 
         if (buttonPressed === "hangup-menu" || buttonPressed === "hangup") {
-          api.current.executeCommand("hangup");
           api.current.executeCommand("endConference");
           sendMessage("END_CALL");
         }
