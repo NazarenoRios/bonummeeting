@@ -67,27 +67,29 @@ function Meeting() {
       api.current.addEventListener("participantJoined", (event) => {
         sendMessage();
 
-        if (isCoachee) {
-          api.current.executeCommand("grantModerator", event.id);
-        }
+        // if (isCoachee) {
+        //   api.current.executeCommand("grantModerator", event.id);
+        // }
       });
 
       api.current.addEventListener("toolbarButtonClicked", (e) => {
-        if (isCoachee) {
-          return;
-        }
+        // if (isCoachee) {
+        //   return;
+        // }
 
-        api.current.executeCommand("endConference");
+        // api.current.executeCommand("endConference");
 
-        const buttonPressed = e.key;
+        // const buttonPressed = e.key;
 
-        if (buttonPressed === "hangup-menu" || buttonPressed === "hangup") {
-          api.current.executeCommand("hangup");
-        }
+        // if (buttonPressed === "hangup-menu" || buttonPressed === "hangup") {
+        //   api.current.executeCommand("hangup");
+        // }
+        sendMessage();
       });
 
       api.current.addEventListener("readyToClose", () => {
-        navigate("/");
+        // navigate("/");
+        sendMessage();
       });
 
       setMeetingStarted(true); // Marca la reunión como iniciada
